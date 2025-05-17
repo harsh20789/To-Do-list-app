@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-100 dark:bg-slate-900">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskMaster Pro</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <!-- Styles -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom animations */
+    @keyframes slideIn {
+      0% { 
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .task-entry {
+      animation: slideIn 0.25s ease-out;
+    }
+  </style>
+  
+  <!-- Tailwind config -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            'sans': ['Inter', 'sans-serif']
+          },
+          animation: {
+            'slide-in': 'slideIn 0.25s ease-out'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-sans min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-200">
+  <div class="container mx-auto px-4 py-6 max-w-6xl">
+    <!-- Header section -->
+    <header class="flex flex-wrap justify-between items-center mb-6 gap-4">
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">TaskMaster Pro</h1>
+      
+      <div class="flex items-center gap-4">
+        <div class="hidden sm:flex items-center gap-3">
+          <span class="text-sm text-gray-500 dark:text-gray-400" id="task-count">0 tasks</span>
+          <div class="w-20 h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div id="progress-bar" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <span class="text-sm text-gray-500 dark:text-gray-400" id="progress-text">0 done</span>
+        </div>
+        
+        <button id="theme-toggle" class="p-2 rounded-full bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors">
+          <span id="theme-icon" class="material-icons text-gray-600 dark:text-gray-300">dark_mode</span>
+        </button>
+        
+        <div class="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center font-medium">JD</div>
+      </div>
+    </header>
+
+    <!-- Search and filter -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+      <div class="relative flex-grow">
+        <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+        <input id="search-input" type="text" placeholder="Find tasks..." 
+               class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-slate-800 dark:text-white">
+      </div>
+      <select id="filter-select" class="px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-slate-800 dark:text-white">
+        <option value="all">All Tasks</option>
+        <option value="completed">Completed</option>
+        <option value="pending">Pending</option>
+      </select>
+    </div>
+
+    <!-- Main content grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Task creation card -->
+      <div class="lg:col-span-1 bg-white dark:bg-slate-800 p-5 rounded-xl shadow">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Add New Task</h2>
+        
+        <form id="task-form" class="space-y-3">
+          <div>
+            <label for="todo-input" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Task Name</label>
+            <input type="text" id="todo-input" placeholder="What needs doing?" 
+                   class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-slate-700 dark:text-white" required>
+          </div>
+          
+          <div>
+            <label for="description-input" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Details</label>
+            <textarea id="description-input" placeholder="Add more details..." rows="2"
+                      class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-slate-700 dark:text-white"></textarea>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="due-date-input" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Due Date</label>
+              <input type="date" id="due-date-input" 
+                     class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-slate-700 dark:text-white">
+            </div>
+            <div>
+              <label for="priority-select" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Priority</label>
+              <select id="priority-select" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-slate-700 dark:text-white">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Categories</label>
+            <div class="flex flex-wrap gap-2">
+              <label class="inline-flex items-center">
+                <input type="checkbox" name="tags" value="Work" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700" checked>
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Work</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="checkbox" name="tags" value="Personal" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700">
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Personal</span>
+              </label>
+            </div>
+          </div>
+          
+          <button type="submit" class="w-full mt-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition flex items-center justify-center gap-1">
+            <span class="material-icons text-lg">add_circle</span>
+            Create Task
+          </button>
+        </form>
+      </div>
+
+      <!-- Task list -->
+      <div class="lg:col-span-2">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">My Tasks</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+              <span id="showing-count">0</span> shown of <span id="total-count">0</span>
+            </div>
+          </div>
+          
+          <div id="todo-list" class="space-y-2">
+            <!-- Tasks will be added here by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats section -->
+    <div id="analytics-container" class="mt-6">
+      <!-- Analytics will be added here by JavaScript -->
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
